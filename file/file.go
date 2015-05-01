@@ -5,7 +5,6 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
-	"github.com/mattes/migrate/migrate/direction"
 	"go/token"
 	"io/ioutil"
 	"path"
@@ -13,9 +12,11 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+
+	"github.com/gomaps/migrate/migrate/direction"
 )
 
-var filenameRegex = `^([0-9]+)_(.*)\.(up|down)\.%s$`
+var filenameRegex = `^v([0-9]+)(_*)(.*)(up|down)?\.%s$`
 
 // FilenameRegex builds regular expression stmt with given
 // filename extension from driver.
@@ -94,7 +95,7 @@ func (mf *MigrationFiles) ToLastFrom(version uint64) (Files, error) {
 	sort.Sort(mf)
 	files := make(Files, 0)
 	for _, migrationFile := range *mf {
-		if migrationFile.Version > version && migrationFile.UpFile != nil {
+		if migrationFile.Version >= version && migrationFile.UpFile != nil {
 			files = append(files, *migrationFile.UpFile)
 		}
 	}
@@ -243,7 +244,7 @@ func ReadMigrationFiles(path string, filenameRegex *regexp.Regexp) (files Migrat
 // parseFilenameSchema parses the filename
 func parseFilenameSchema(filename string, filenameRegex *regexp.Regexp) (version uint64, name string, d direction.Direction, err error) {
 	matches := filenameRegex.FindStringSubmatch(filename)
-	if len(matches) != 4 {
+	if len(matches) < 4 {
 		return 0, "", 0, errors.New("Unable to parse filename schema")
 	}
 
@@ -252,12 +253,10 @@ func parseFilenameSchema(filename string, filenameRegex *regexp.Regexp) (version
 		return 0, "", 0, errors.New(fmt.Sprintf("Unable to parse version '%v' in filename schema", matches[0]))
 	}
 
-	if matches[3] == "up" {
-		d = direction.Up
-	} else if matches[3] == "down" {
+	if matches[3] == "down" {
 		d = direction.Down
 	} else {
-		return 0, "", 0, errors.New(fmt.Sprintf("Unable to parse up|down '%v' in filename schema", matches[3]))
+		d = direction.Up
 	}
 
 	return version, matches[2], d, nil

@@ -11,10 +11,10 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/mattes/migrate/driver"
-	"github.com/mattes/migrate/file"
-	"github.com/mattes/migrate/migrate/direction"
-	pipep "github.com/mattes/migrate/pipe"
+	"github.com/gomaps/migrate/driver"
+	"github.com/gomaps/migrate/file"
+	"github.com/gomaps/migrate/migrate/direction"
+	pipep "github.com/gomaps/migrate/pipe"
 )
 
 // Up applies all available migrations

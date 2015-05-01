@@ -1,19 +1,20 @@
 // Package main is the CLI.
 // You can use the CLI via Terminal.
-// import "github.com/mattes/migrate/migrate" for usage within Go.
+// import "github.com/gomaps/migrate/migrate" for usage within Go.
 package main
 
 import (
 	"flag"
 	"fmt"
-	"github.com/fatih/color"
-	"github.com/mattes/migrate/file"
-	"github.com/mattes/migrate/migrate"
-	"github.com/mattes/migrate/migrate/direction"
-	pipep "github.com/mattes/migrate/pipe"
 	"os"
 	"strconv"
 	"time"
+
+	"github.com/fatih/color"
+	"github.com/gomaps/migrate/file"
+	"github.com/gomaps/migrate/migrate"
+	"github.com/gomaps/migrate/migrate/direction"
+	pipep "github.com/gomaps/migrate/pipe"
 )
 
 var url = flag.String("url", "", "")

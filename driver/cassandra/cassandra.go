@@ -3,12 +3,13 @@ package cassandra
 
 import (
 	"fmt"
-	"github.com/gocql/gocql"
-	"github.com/mattes/migrate/file"
-	"github.com/mattes/migrate/migrate/direction"
 	"net/url"
 	"strings"
 	"time"
+
+	"github.com/gocql/gocql"
+	"github.com/gomaps/migrate/file"
+	"github.com/gomaps/migrate/migrate/direction"
 )
 
 type Driver struct {

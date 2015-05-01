@@ -5,10 +5,11 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"github.com/lib/pq"
-	"github.com/mattes/migrate/file"
-	"github.com/mattes/migrate/migrate/direction"
 	"strconv"
+
+	"github.com/gomaps/migrate/file"
+	"github.com/gomaps/migrate/migrate/direction"
+	"github.com/lib/pq"
 )
 
 type Driver struct {

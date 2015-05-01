@@ -5,10 +5,11 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"github.com/mattes/migrate/file"
-	"github.com/mattes/migrate/migrate/direction"
-	"github.com/mattn/go-sqlite3"
 	"strings"
+
+	"github.com/gomaps/migrate/file"
+	"github.com/gomaps/migrate/migrate/direction"
+	"github.com/mattn/go-sqlite3"
 )
 
 type Driver struct {
