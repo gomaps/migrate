@@ -198,7 +198,7 @@ func MigrateSync(url, migrationsPath string, relativeN int) (err []error, ok boo
 }
 
 // Version returns the current migration version
-func Version(url, migrationsPath string) (version uint64, err error) {
+func Version(url, migrationsPath string) (version int, err error) {
 	d, err := driver.New(url)
 	if err != nil {
 		return 0, err
@@ -217,13 +217,13 @@ func Create(url, migrationsPath, name string) (*file.MigrationFile, error) {
 		return nil, err
 	}
 
-	version := uint64(0)
+	version := int(0)
 	if len(files) > 0 {
 		lastFile := files[len(files)-1]
 		version = lastFile.Version
 	}
 	version += 1
-	versionStr := strconv.FormatUint(version, 10)
+	versionStr := strconv.FormatInt(int64(version), 10)
 
 	length := 4 // TODO(mattes) check existing files and try to guess length
 	if len(versionStr)%length != 0 {
@@ -263,7 +263,7 @@ func Create(url, migrationsPath, name string) (*file.MigrationFile, error) {
 
 // initDriverAndReadMigrationFilesAndGetVersion is a small helper
 // function that is common to most of the migration funcs
-func initDriverAndReadMigrationFilesAndGetVersion(url, migrationsPath string) (driver.Driver, *file.MigrationFiles, uint64, error) {
+func initDriverAndReadMigrationFilesAndGetVersion(url, migrationsPath string) (driver.Driver, *file.MigrationFiles, int, error) {
 	d, err := driver.New(url)
 	if err != nil {
 		return nil, nil, 0, err

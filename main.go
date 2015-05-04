@@ -7,6 +7,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"path"
 	"strconv"
 	"time"
 
@@ -25,6 +26,11 @@ func main() {
 	flag.Parse()
 	command := flag.Arg(0)
 
+	configPath := findConfigPath(*migrationsPath)
+	fmt.Println(configPath)
+
+	values := loadConfig(configPath)
+
 	if *version {
 		fmt.Println(Version)
 		os.Exit(0)
@@ -32,6 +38,11 @@ func main() {
 
 	if *migrationsPath == "" {
 		*migrationsPath, _ = os.Getwd()
+	}
+
+	if *url == "" {
+		db := values.Database
+		*url = fmt.Sprintf("%s://%s:%s@%s:%s/%s?%s", db.Driver, db.User, db.Password, db.Host, db.Port, db.Name, db.Options)
 	}
 
 	switch command {
@@ -231,4 +242,10 @@ Commands:
 
 '-path' defaults to current working directory.
 `)
+}
+
+// findConfig takes a pathname for the migrations and tries to find the config.json for those migrations
+// hard-coded to go up two directories for now but can file-walk if that is a problem
+func findConfigPath(pathname string) string {
+	return path.Join(pathname, "../../config.json")
 }

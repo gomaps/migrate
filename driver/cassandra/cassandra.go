@@ -149,8 +149,8 @@ func (driver *Driver) Migrate(f file.File, pipe chan interface{}) {
 	}
 }
 
-func (driver *Driver) Version() (uint64, error) {
-	var version int64
+func (driver *Driver) Version() (int, error) {
+	var version int
 	err := driver.session.Query("SELECT version FROM "+tableName+" WHERE versionRow = ?", versionRow).Scan(&version)
-	return uint64(version) - 1, err
+	return int(version) - 1, err
 }

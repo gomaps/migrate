@@ -166,12 +166,12 @@ func (driver *Driver) Migrate(f file.File, pipe chan interface{}) {
 	}
 }
 
-func (driver *Driver) Version() (uint64, error) {
-	var version uint64
+func (driver *Driver) Version() (int, error) {
+	var version int
 	err := driver.db.QueryRow("SELECT version FROM " + tableName + " ORDER BY version DESC").Scan(&version)
 	switch {
 	case err == sql.ErrNoRows:
-		return 0, nil
+		return -1, nil
 	case err != nil:
 		return 0, err
 	default:

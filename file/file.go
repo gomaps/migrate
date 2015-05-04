@@ -34,7 +34,7 @@ type File struct {
 	FileName string
 
 	// version parsed from filename
-	Version uint64
+	Version int
 
 	// the actual migration name parsed from filename
 	Name string
@@ -52,7 +52,7 @@ type Files []File
 // MigrationFile represents both the UP and the DOWN migration file.
 type MigrationFile struct {
 	// version of the migration file, parsed from the filenames
-	Version uint64
+	Version int
 
 	// reference to the *up* migration file
 	UpFile *File
@@ -78,7 +78,7 @@ func (f *File) ReadContent() error {
 
 // ToFirstFrom fetches all (down) migration files including the migration file
 // of the current version to the very first migration file.
-func (mf *MigrationFiles) ToFirstFrom(version uint64) (Files, error) {
+func (mf *MigrationFiles) ToFirstFrom(version int) (Files, error) {
 	sort.Sort(sort.Reverse(mf))
 	files := make(Files, 0)
 	for _, migrationFile := range *mf {
@@ -91,11 +91,11 @@ func (mf *MigrationFiles) ToFirstFrom(version uint64) (Files, error) {
 
 // ToLastFrom fetches all (up) migration files to the most recent migration file.
 // The migration file of the current version is not included.
-func (mf *MigrationFiles) ToLastFrom(version uint64) (Files, error) {
+func (mf *MigrationFiles) ToLastFrom(version int) (Files, error) {
 	sort.Sort(mf)
 	files := make(Files, 0)
 	for _, migrationFile := range *mf {
-		if migrationFile.Version >= version && migrationFile.UpFile != nil {
+		if migrationFile.Version > version && migrationFile.UpFile != nil {
 			files = append(files, *migrationFile.UpFile)
 		}
 	}
@@ -110,7 +110,7 @@ func (mf *MigrationFiles) ToLastFrom(version uint64) (Files, error) {
 // 		-1 will fetch the the previous down migration file
 // 		-2 will fetch the next two previous down migration files
 //		-n will fetch ...
-func (mf *MigrationFiles) From(version uint64, relativeN int) (Files, error) {
+func (mf *MigrationFiles) From(version int, relativeN int) (Files, error) {
 	var d direction.Direction
 	if relativeN > 0 {
 		d = direction.Up
@@ -158,7 +158,7 @@ func ReadMigrationFiles(path string, filenameRegex *regexp.Regexp) (files Migrat
 		return nil, err
 	}
 	type tmpFile struct {
-		version  uint64
+		version  int
 		name     string
 		filename string
 		d        direction.Direction
@@ -172,7 +172,7 @@ func ReadMigrationFiles(path string, filenameRegex *regexp.Regexp) (files Migrat
 	}
 
 	// put tmpFiles into MigrationFile struct
-	parsedVersions := make(map[uint64]bool)
+	parsedVersions := make(map[int]bool)
 	newFiles := make(MigrationFiles, 0)
 	for _, file := range tmpFiles {
 		if _, ok := parsedVersions[file.version]; !ok {
@@ -242,16 +242,17 @@ func ReadMigrationFiles(path string, filenameRegex *regexp.Regexp) (files Migrat
 }
 
 // parseFilenameSchema parses the filename
-func parseFilenameSchema(filename string, filenameRegex *regexp.Regexp) (version uint64, name string, d direction.Direction, err error) {
+func parseFilenameSchema(filename string, filenameRegex *regexp.Regexp) (version int, name string, d direction.Direction, err error) {
 	matches := filenameRegex.FindStringSubmatch(filename)
 	if len(matches) < 4 {
 		return 0, "", 0, errors.New("Unable to parse filename schema")
 	}
 
-	version, err = strconv.ParseUint(matches[1], 10, 0)
+	version64, err := strconv.ParseInt(matches[1], 10, 0)
 	if err != nil {
 		return 0, "", 0, errors.New(fmt.Sprintf("Unable to parse version '%v' in filename schema", matches[0]))
 	}
+	version = int(version64)
 
 	if matches[3] == "down" {
 		d = direction.Down
