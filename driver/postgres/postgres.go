@@ -16,7 +16,7 @@ type Driver struct {
 	db *sql.DB
 }
 
-const tableName = "schema_migrations"
+const tableName = "schema_version"
 
 func (driver *Driver) Initialize(url string) error {
 	db, err := sql.Open("postgres", url)
@@ -110,7 +110,7 @@ func (driver *Driver) Migrate(f file.File, pipe chan interface{}) {
 
 func (driver *Driver) Version() (int, error) {
 	var version int
-	err := driver.db.QueryRow("SELECT version FROM " + tableName + " ORDER BY version DESC LIMIT 1").Scan(&version)
+	err := driver.db.QueryRow("SELECT version_rank FROM " + tableName + " ORDER BY version_rank DESC LIMIT 1").Scan(&version)
 	switch {
 	case err == sql.ErrNoRows:
 		return -1, nil
