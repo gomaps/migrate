@@ -44,6 +44,12 @@ type File struct {
 
 	// UP or DOWN migration
 	Direction direction.Direction
+
+	// Rank, version + 1
+	Rank int
+
+	// SHA1 checksum of the file content
+	CheckSum int
 }
 
 // Files is a slice of Files
@@ -72,6 +78,7 @@ func (f *File) ReadContent() error {
 			return err
 		}
 		f.Content = content
+		f.CheckSum = 1234567890
 	}
 	return nil
 }
@@ -190,6 +197,7 @@ func ReadMigrationFiles(path string, filenameRegex *regexp.Regexp) (files Migrat
 					Name:      file.name,
 					Content:   nil,
 					Direction: direction.Up,
+					Rank:      file.version + 1,
 				}
 				lookFordirection = direction.Down
 			case direction.Down:
@@ -217,6 +225,7 @@ func ReadMigrationFiles(path string, filenameRegex *regexp.Regexp) (files Migrat
 							Name:      file2.name,
 							Content:   nil,
 							Direction: direction.Up,
+							Rank:      file.version + 1,
 						}
 					case direction.Down:
 						migrationFile.DownFile = &File{

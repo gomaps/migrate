@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"os/user"
 	"strconv"
 
 	"github.com/gomaps/migrate/file"
@@ -63,7 +64,15 @@ func (driver *Driver) Migrate(f file.File, pipe chan interface{}) {
 	}
 
 	if f.Direction == direction.Up {
-		if _, err := tx.Exec("INSERT INTO "+tableName+" (version) VALUES ($1)", f.Version); err != nil {
+		q := "INSERT INTO " + tableName
+		q += " (version, version_rank, installed_rank, description, type, script, checksum, installed_by, execution_time, success)"
+		q += " VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)"
+		user, err := user.Current()
+		if err != nil {
+			pipe <- err
+			return
+		}
+		if _, err := tx.Exec(q, f.Version, f.Rank, f.Rank, f.Name, "SQL", f.FileName, f.CheckSum, user.Name, 0, true); err != nil {
 			pipe <- err
 			if err := tx.Rollback(); err != nil {
 				pipe <- err
