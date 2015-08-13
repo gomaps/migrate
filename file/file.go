@@ -78,7 +78,6 @@ func (f *File) ReadContent() error {
 			return err
 		}
 		f.Content = content
-		f.CheckSum = 1234567890
 	}
 	return nil
 }

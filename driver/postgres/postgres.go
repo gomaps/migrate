@@ -126,6 +126,6 @@ func (driver *Driver) Version() (int, error) {
 	case err != nil:
 		return 0, err
 	default:
-		return version, nil
+		return version - 1, nil
 	}
 }
