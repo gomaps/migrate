@@ -16,7 +16,7 @@ import (
 	"github.com/gomaps/migrate/migrate/direction"
 )
 
-var filenameRegex = `^v(\d+)__(\w+)\.sql$`
+var filenameRegex = `^v(\d+)__(\w+)\.%s$`
 
 // FilenameRegex builds regular expression stmt with given
 // filename extension from driver.
