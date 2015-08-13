@@ -16,7 +16,7 @@ import (
 	"github.com/gomaps/migrate/migrate/direction"
 )
 
-var filenameRegex = `^v([0-9]+)(_*)(.*)(up|down)?\.%s$`
+var filenameRegex = `^v(\d+)__(\w+)\.sql$`
 
 // FilenameRegex builds regular expression stmt with given
 // filename extension from driver.
@@ -244,7 +244,7 @@ func ReadMigrationFiles(path string, filenameRegex *regexp.Regexp) (files Migrat
 // parseFilenameSchema parses the filename
 func parseFilenameSchema(filename string, filenameRegex *regexp.Regexp) (version int, name string, d direction.Direction, err error) {
 	matches := filenameRegex.FindStringSubmatch(filename)
-	if len(matches) < 4 {
+	if len(matches) < 3 {
 		return 0, "", 0, errors.New("Unable to parse filename schema")
 	}
 
@@ -254,11 +254,8 @@ func parseFilenameSchema(filename string, filenameRegex *regexp.Regexp) (version
 	}
 	version = int(version64)
 
-	if matches[3] == "down" {
-		d = direction.Down
-	} else {
-		d = direction.Up
-	}
+	// NOTE: only support forward migrations for now
+	d = direction.Up
 
 	return version, matches[2], d, nil
 }
