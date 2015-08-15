@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"go/token"
+	"hash/crc32"
 	"io/ioutil"
 	"path"
 	"regexp"
@@ -48,8 +49,8 @@ type File struct {
 	// Rank, version + 1
 	Rank int
 
-	// SHA1 checksum of the file content
-	CheckSum int
+	// CRC32 checksum of the file content
+	Checksum uint32
 }
 
 // Files is a slice of Files
@@ -78,6 +79,7 @@ func (f *File) ReadContent() error {
 			return err
 		}
 		f.Content = content
+		f.Checksum = crc32.ChecksumIEEE(content)
 	}
 	return nil
 }

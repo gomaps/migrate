@@ -26,10 +26,10 @@ func main() {
 	flag.Parse()
 	command := flag.Arg(0)
 
-	configPath := findConfigPath(*migrationsPath)
-	fmt.Println(configPath)
+	//configPath := findConfigPath(*migrationsPath)
+	//fmt.Println(configPath)
 
-	values := loadConfig(configPath)
+	//values := loadConfig(configPath)
 
 	if *version {
 		fmt.Println(Version)
@@ -41,8 +41,8 @@ func main() {
 	}
 
 	if *url == "" {
-		db := values.Database
-		*url = fmt.Sprintf("%s://%s:%s@%s:%s/%s?%s", db.Driver, db.User, db.Password, db.Host, db.Port, db.Name, db.Options)
+		//db := values.Database
+		//*url = fmt.Sprintf("%s://%s:%s@%s:%s/%s?%s", db.Driver, db.User, db.Password, db.Host, db.Port, db.Name, db.Options)
 	}
 
 	switch command {

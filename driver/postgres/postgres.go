@@ -63,6 +63,12 @@ func (driver *Driver) Migrate(f file.File, pipe chan interface{}) {
 		return
 	}
 
+	// Read content along with calculating checksum
+	if err := f.ReadContent(); err != nil {
+		pipe <- err
+		return
+	}
+
 	if f.Direction == direction.Up {
 		q := "INSERT INTO " + tableName
 		q += " (version, version_rank, installed_rank, description, type, script, checksum, installed_by, execution_time, success)"
@@ -72,7 +78,7 @@ func (driver *Driver) Migrate(f file.File, pipe chan interface{}) {
 			pipe <- err
 			return
 		}
-		if _, err := tx.Exec(q, f.Version, f.Rank, f.Rank, f.Name, "SQL", f.FileName, f.CheckSum, user.Name, 0, true); err != nil {
+		if _, err := tx.Exec(q, f.Version, f.Rank, f.Rank, f.Name, "SQL", f.FileName, f.Checksum, user.Name, 0, true); err != nil {
 			pipe <- err
 			if err := tx.Rollback(); err != nil {
 				pipe <- err
@@ -87,11 +93,6 @@ func (driver *Driver) Migrate(f file.File, pipe chan interface{}) {
 			}
 			return
 		}
-	}
-
-	if err := f.ReadContent(); err != nil {
-		pipe <- err
-		return
 	}
 
 	if _, err := tx.Exec(string(f.Content)); err != nil {
