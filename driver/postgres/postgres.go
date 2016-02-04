@@ -49,7 +49,7 @@ func (driver *Driver) ensureVersionTableExists() error {
 		version_rank int, 
 		installed_rank int,
 		description varchar(500),
-		typea varchar(500),
+		type varchar(500),
 		script varchar(500),
 		checksum  int,
 		installed_by varchar(500),
