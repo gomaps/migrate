@@ -43,7 +43,19 @@ func (driver *Driver) Close() error {
 }
 
 func (driver *Driver) ensureVersionTableExists() error {
-	if _, err := driver.db.Exec("CREATE TABLE IF NOT EXISTS " + tableName + " (version int not null primary key);"); err != nil {
+	if _, err := driver.db.Exec("CREATE TABLE IF NOT EXISTS " + tableName + `
+	(
+		version int not null primary key,
+		version_rank int, 
+		installed_rank int,
+		description varchar(500),
+		typea varchar(500),
+		script varchar(500),
+		checksum  int,
+		installed_by varchar(500),
+		execution_time int,
+		success boolean
+	);`); err != nil {
 		return err
 	}
 	return nil
